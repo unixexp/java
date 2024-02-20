@@ -5,9 +5,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public abstract class YoutubeExtractor {
         }).start();
     }
 
-    private Map<Integer, YtFile> getStreamUrls() throws MalformedURLException, IOException {
+    private Map<Integer, YtFile> getStreamUrls() throws IOException, ParseException {
         String pageHtml;
         Map<Integer, YtFile> ytFiles = new HashMap<>();
 
@@ -160,7 +160,22 @@ public abstract class YoutubeExtractor {
                 }
             }
 
+            JSONObject videoDetails = ytPlayerResponse.getJSONObject("videoDetails");
+            this.videoMeta = new VideoMeta(videoDetails.getString("videoId"),
+                    videoDetails.getString("title"),
+                    videoDetails.getString("author"),
+                    videoDetails.getString("channelId"),
+                    Long.parseLong(videoDetails.getString("lengthSeconds")),
+                    Long.parseLong(videoDetails.getString("viewCount")),
+                    videoDetails.getBoolean("isLiveContent"),
+                    videoDetails.getString("shortDescription"));
+
+        } else {
+            throw new ParseException("ytPlayerResponse was not found", 0);
         }
+
+        Decipher decipher = Decipher.create(pageHtml);
+        System.out.println(decipher);
 
         return ytFiles;
     }

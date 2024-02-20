@@ -15,7 +15,7 @@ public class YouAMP {
         mainWindow.create();
 
         final String youtubeLink = "https://www.youtube.com/watch?v=oPkaHxvxoso&list=RDoPkaHxvxoso&start_radio=1";
-        new YoutubeExtractor() {
+        YoutubeExtractor youtubeExtractor = new YoutubeExtractor() {
 
             @Override
             protected void onExtractionComplete(Map<Integer, YtFile> ytFiles, VideoMeta videoMeta) {
@@ -33,7 +33,8 @@ public class YouAMP {
             protected void onError(String errorMessage) {
                 System.out.println(errorMessage);
             }
-        }.extract(youtubeLink);
+        };
+        youtubeExtractor.extract(youtubeLink);
 
     }
 
