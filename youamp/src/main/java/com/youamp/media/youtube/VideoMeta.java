@@ -1,5 +1,9 @@
 package com.youamp.media.youtube;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class VideoMeta {
 
     private static final String IMAGE_BASE_URL = "http://i.ytimg.com/vi/";
@@ -7,6 +11,7 @@ public class VideoMeta {
     private final String videoId;
     private final String title;
     private final String shortDescript;
+    private final List<Thumbnail> thumbnails;
 
     private final String author;
     private final String channelId;
@@ -17,7 +22,8 @@ public class VideoMeta {
     private final boolean isLiveStream;
 
     public VideoMeta(String videoId, String title, String author, String channelId,
-                        long videoLength, long viewCount, boolean isLiveStream, String shortDescript) {
+                        long videoLength, long viewCount, boolean isLiveStream, String shortDescript,
+                        List<Thumbnail> thumbnails) {
         this.videoId = videoId;
         this.title = title;
         this.author = author;
@@ -26,6 +32,7 @@ public class VideoMeta {
         this.viewCount = viewCount;
         this.isLiveStream = isLiveStream;
         this.shortDescript = shortDescript;
+        this.thumbnails = thumbnails;
     }
 
     // 120 x 90
@@ -68,6 +75,8 @@ public class VideoMeta {
     public String getChannelId() {
         return channelId;
     }
+
+    public List<Thumbnail> getThumbnails() { return thumbnails; }
 
     public boolean isLiveStream() {
         return isLiveStream;
@@ -121,6 +130,13 @@ public class VideoMeta {
 
     @Override
     public String toString() {
+        List<String> lThumbnails = new ArrayList<>();
+        for (Thumbnail iThumbnail : thumbnails) {
+            lThumbnails.add(iThumbnail.toString());
+        }
+        StringBuilder sbThumbnails = new StringBuilder();
+        sbThumbnails.append("[").append(String.join(",", lThumbnails)).append("]");
+
         return "VideoMeta{" +
                 "videoId='" + videoId + '\'' +
                 ", title='" + title + '\'' +
@@ -129,6 +145,7 @@ public class VideoMeta {
                 ", videoLength=" + videoLength +
                 ", viewCount=" + viewCount +
                 ", isLiveStream=" + isLiveStream +
+                ", thumbnails=" + sbThumbnails.toString() +
                 '}';
     }
 }

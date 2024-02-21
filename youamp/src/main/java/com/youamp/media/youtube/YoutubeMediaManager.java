@@ -11,9 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -163,6 +161,15 @@ public abstract class YoutubeMediaManager {
             }
 
             JSONObject videoDetails = ytPlayerResponse.getJSONObject("videoDetails");
+            JSONArray thumbnailsJA = videoDetails.getJSONObject("thumbnail").getJSONArray("thumbnails");
+            List<Thumbnail> thumbnails = new ArrayList<>();
+            for (Object iThumbnail : thumbnailsJA) {
+                thumbnails.add(new Thumbnail(
+                        ((JSONObject) iThumbnail).getInt("width"),
+                        ((JSONObject) iThumbnail).getInt("height"),
+                        ((JSONObject) iThumbnail).getString("url")
+                ));
+            }
             this.videoMeta = new VideoMeta(videoDetails.getString("videoId"),
                     videoDetails.getString("title"),
                     videoDetails.getString("author"),
@@ -170,7 +177,9 @@ public abstract class YoutubeMediaManager {
                     Long.parseLong(videoDetails.getString("lengthSeconds")),
                     Long.parseLong(videoDetails.getString("viewCount")),
                     videoDetails.getBoolean("isLiveContent"),
-                    videoDetails.getString("shortDescription"));
+                    videoDetails.getString("shortDescription"),
+                    thumbnails
+            );
 
         } else {
             throw new ParseException("ytPlayerResponse was not found", 0);

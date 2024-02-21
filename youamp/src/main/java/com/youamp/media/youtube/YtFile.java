@@ -20,16 +20,10 @@ public class YtFile {
 
     public String getSignature() { return signature; }
 
-    /**
-     * The url to download the file.
-     */
     public String getUrl() {
         return url;
     }
 
-    /**
-     * Format data for the specific file.
-     */
     public Format getFormat() {
         return format;
     }

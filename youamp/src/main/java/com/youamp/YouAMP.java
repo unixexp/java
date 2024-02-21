@@ -1,6 +1,7 @@
 package com.youamp;
 
 import com.youamp.gui.MainWindow;
+import com.youamp.media.youtube.TestYoutubeMediaManager;
 import com.youamp.media.youtube.VideoMeta;
 import com.youamp.media.youtube.YoutubeMediaManager;
 import com.youamp.media.youtube.YtFile;
@@ -14,8 +15,9 @@ public class YouAMP {
         MainWindow mainWindow = new MainWindow();
         mainWindow.create();
 
-        final String youtubeLink = "https://www.youtube.com/watch?v=AqJ0Vi9Qx5U";
-        YoutubeMediaManager youtubeMediaManager = new YoutubeMediaManager() {
+        final String youtubeLink = "https://www.youtube.com/watch?v=tBN7zJ-QdUQ";
+        // YoutubeMediaManager youtubeMediaManager = new YoutubeMediaManager() {
+        TestYoutubeMediaManager youtubeMediaManager = new TestYoutubeMediaManager() {
 
             @Override
             protected void onLoadComplete(Map<Integer, YtFile> ytFiles, VideoMeta videoMeta) {
@@ -25,6 +27,7 @@ public class YouAMP {
                     YtFile ytFile = entry.getValue();
                     System.out.println(ytFile.toString());
                 }
+                System.out.println(videoMeta);
             }
 
             @Override
