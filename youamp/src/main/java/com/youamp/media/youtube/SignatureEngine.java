@@ -1,17 +1,21 @@
 package com.youamp.media.youtube;
 
+import javax.script.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Decipher {
+public class SignatureEngine {
 
     private String mDecipherJsFileName;
+    private String mDecipherFunctionName;
     private String mDecipherFunctions;
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 " +
@@ -25,8 +29,13 @@ public class Decipher {
             "\\.([a-zA-Z$][a-zA-Z0-9$]{0,2})\\(");
     private static final Pattern patFunction = Pattern.compile("([{; =])([a-zA-Z$_][a-zA-Z0-9$]{0,2})\\(");
 
-    private Decipher(String decipherJsFileName, String decipherFunctions) {
+    static {
+        System.setProperty("nashorn.args","--no-deprecation-warning");
+    }
+
+    private SignatureEngine(String decipherJsFileName, String decipherFunctionName, String decipherFunctions) {
         this.mDecipherJsFileName = decipherJsFileName;
+        this.mDecipherFunctionName = decipherFunctionName;
         this.mDecipherFunctions = decipherFunctions;
     }
 
@@ -54,7 +63,7 @@ public class Decipher {
         }
     }
 
-    private static String getDecipherFunctions(String decipherJsFileContent) throws ParseException {
+    private static Map<String, String> getDecipherFunctions(String decipherJsFileContent) throws ParseException {
         String decipherFunctionName = null;
         String decipherFunctions = "";
         Matcher mat = patSignatureDecFunction.matcher(decipherJsFileContent);
@@ -135,14 +144,17 @@ public class Decipher {
                 }
             }
 
-            return decipherFunctions;
+            Map<String, String> result = new HashMap<>();
+            result.put("decipherFunctionName", decipherFunctionName);
+            result.put("decipherFunctions", decipherFunctions);
+            return result;
         } else {
             throw new ParseException("Decipher function signature not found", 0);
         }
 
     }
 
-    public static Decipher create(String pageHtml) throws ParseException, IOException {
+    public static SignatureEngine create(String pageHtml) throws ParseException, IOException {
         Matcher mat = patDecryptionJsFile.matcher(pageHtml);
         if (!mat.find())
             mat = patDecryptionJsFileWithoutSlash.matcher(pageHtml);
@@ -150,12 +162,28 @@ public class Decipher {
             final String decipherJsFileName = mat.group(0).replace("\\/", "/");
 
             String decipherJsFileContent = getDecipherJsFileContent(decipherJsFileName);
-            String decipherFunctions = getDecipherFunctions(decipherJsFileContent);
+            Map<String, String> decipherResult = getDecipherFunctions(decipherJsFileContent);
 
-            return new Decipher(decipherJsFileName, decipherFunctions);
+            return new SignatureEngine(
+                    decipherJsFileName,
+                    decipherResult.get("decipherFunctionName"),
+                    decipherResult.get("decipherFunctions"));
         } else {
             throw new ParseException("Decipher JS filename not found", 0);
         }
+    }
+
+    public String decipher(String signature) throws ScriptException {
+        final StringBuilder decipherJSCode = new StringBuilder(mDecipherFunctions + " function decipher(");
+        decipherJSCode.append("){return ");
+        decipherJSCode.append(mDecipherFunctionName).append("('").append(signature).append("')");
+        decipherJSCode.append("};decipher();");
+
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+        CompiledScript script = ((Compilable) engine).compile(decipherJSCode.toString());
+
+        return String.valueOf(script.eval());
     }
 
     @Override

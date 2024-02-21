@@ -2,9 +2,9 @@ package com.youamp.media.youtube;
 
 public class YtFile {
 
-    private final Format format;
-    private final String url;
-    private final String signature;
+    private Format format;
+    private String url;
+    private String signature;
 
     YtFile(Format format, String url) {
         this.format = format;
@@ -32,6 +32,10 @@ public class YtFile {
      */
     public Format getFormat() {
         return format;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override

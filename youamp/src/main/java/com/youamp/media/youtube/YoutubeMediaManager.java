@@ -3,6 +3,7 @@ package com.youamp.media.youtube;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.script.ScriptException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;
@@ -11,11 +12,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class YoutubeExtractor {
+public abstract class YoutubeMediaManager {
 
     private String videoID;
     private VideoMeta videoMeta;
@@ -33,14 +35,14 @@ public abstract class YoutubeExtractor {
     private static final Pattern patSigEncUrl = Pattern.compile("url=(.+?)(\\u0026|$)");
     private static final Pattern patSignature = Pattern.compile("s=(.+?)(\\u0026|$)");
 
-    protected abstract void onExtractionComplete(Map<Integer, YtFile> ytFiles, VideoMeta videoMeta);
+    protected abstract void onLoadComplete(Map<Integer, YtFile> ytFiles, VideoMeta videoMeta);
     protected abstract void onError(String errorMessage);
 
     protected void onPostExecute(Map<Integer, YtFile> ytFiles) {
-        onExtractionComplete(ytFiles, videoMeta);
+        onLoadComplete(ytFiles, videoMeta);
     }
 
-    public void extract(String youtubeLink) {
+    public void load(String youtubeLink) {
         new Thread(() -> {
             videoID = null;
             if (youtubeLink == null) {
@@ -174,8 +176,34 @@ public abstract class YoutubeExtractor {
             throw new ParseException("ytPlayerResponse was not found", 0);
         }
 
-        Decipher decipher = Decipher.create(pageHtml);
-        System.out.println(decipher);
+        SignatureEngine signatureEngine = SignatureEngine.create(pageHtml);
+        Iterator<Map.Entry<Integer, YtFile>> iterator = ytFiles.entrySet().iterator();
+        int[] failedList = new int[ytFiles.size()];
+        int failed = 0;
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, YtFile> entry = iterator.next();
+            YtFile ytFile = entry.getValue();
+            if (ytFile.getSignature() != null) {
+                try {
+                    String decipheredSignature = signatureEngine.decipher(ytFile.getSignature());
+                    ytFile.setUrl(ytFile.getUrl() + "&sig=" + decipheredSignature);
+                } catch (ScriptException e) {
+                    /*
+                    System.out.println("Error decipher signature for file " +
+                            ytFile.getFormat().toString() +
+                            "\n" +
+                            e.toString());
+
+                     */
+                    failedList[failed] = entry.getKey();
+                    failed++;
+                }
+            }
+        }
+
+        for (int f : failedList) {
+            ytFiles.remove(f);
+        }
 
         return ytFiles;
     }
