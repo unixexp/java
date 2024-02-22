@@ -1,0 +1,2 @@
+YoutubeMediaManager not working in current openjdk version because ScriptEngineManager removed :(
+TODO: find replacement
