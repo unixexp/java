@@ -3,13 +3,11 @@
 #/Users/unixexp/Soft/jdk/jdk-23.jdk/Contents/Home/bin/java \
 #    -Djavafx.verbose=true \
 #    -Dprism.verbose=true \
-#    -Djava.library.path=/Users/unixexp/Soft/jdk/javafx-sdk-23/lib \
 #    --module-path /Users/unixexp/Soft/jdk/javafx-sdk-23/lib \
 #    --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web \
 #    -jar ./target/youamp-1.0-SNAPSHOT.jar
 
 /Users/unixexp/Soft/jdk/jdk-23.jdk/Contents/Home/bin/java \
-    -Djava.library.path=/Users/unixexp/Soft/jdk/javafx-sdk-23/lib \
     --module-path /Users/unixexp/Soft/jdk/javafx-sdk-23/lib \
     --add-modules javafx.base,javafx.controls,javafx.graphics \
     -jar ./target/youamp-1.0-SNAPSHOT.jar

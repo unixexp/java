@@ -42,37 +42,7 @@
 
         <dependency>
             <groupId>javafx</groupId>
-            <artifactId>javafx.fxml</artifactId>
-            <version>23</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javafx</groupId>
             <artifactId>javafx.graphics</artifactId>
-            <version>23</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javafx</groupId>
-            <artifactId>javafx.media</artifactId>
-            <version>23</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javafx</groupId>
-            <artifactId>javafx.swing</artifactId>
-            <version>23</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javafx</groupId>
-            <artifactId>javafx.web</artifactId>
-            <version>23</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javafx</groupId>
-            <artifactId>javafx-swt</artifactId>
             <version>23</version>
         </dependency>
     </dependencies>
