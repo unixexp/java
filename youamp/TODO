@@ -1,2 +1,4 @@
+Make it clean why not found javafx.base module if it does not defined by --module-path, --add-modules
+
 YoutubeMediaManager not working in current openjdk version because ScriptEngineManager removed :(
 TODO: find replacement

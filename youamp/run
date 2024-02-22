@@ -8,6 +8,5 @@
 #    -jar ./target/youamp-1.0-SNAPSHOT.jar
 
 /Users/unixexp/Soft/jdk/jdk-23.jdk/Contents/Home/bin/java \
-    --module-path /Users/unixexp/Soft/jdk/javafx-sdk-23/lib \
     --add-modules javafx.base,javafx.controls,javafx.graphics \
     -jar ./target/youamp-1.0-SNAPSHOT.jar
